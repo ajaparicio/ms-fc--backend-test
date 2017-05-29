@@ -52,4 +52,13 @@ public class Tweet {
         this.pre2015MigrationStatus = pre2015MigrationStatus;
     }
 
+    @Override
+    public String toString() {
+        return "Tweet{" +
+                "id=" + id +
+                ", publisher='" + publisher + '\'' +
+                ", tweet='" + tweet + '\'' +
+                ", pre2015MigrationStatus=" + pre2015MigrationStatus +
+                '}';
+    }
 }

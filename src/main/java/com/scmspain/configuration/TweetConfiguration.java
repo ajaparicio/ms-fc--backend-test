@@ -1,5 +1,6 @@
 package com.scmspain.configuration;
 
+import com.scmspain.controller.GlobalExceptionHandler;
 import com.scmspain.controller.TweetController;
 import com.scmspain.services.TweetService;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
@@ -18,5 +19,10 @@ public class TweetConfiguration {
     @Bean
     public TweetController getTweetConfiguration(TweetService tweetService) {
         return new TweetController(tweetService);
+    }
+
+    @Bean
+    public GlobalExceptionHandler getGlobalExceptionHandler() {
+        return new GlobalExceptionHandler();
     }
 }

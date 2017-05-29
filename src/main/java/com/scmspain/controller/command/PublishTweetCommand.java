@@ -1,7 +1,14 @@
 package com.scmspain.controller.command;
 
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class PublishTweetCommand {
+    @NotEmpty (message = "{publisher.notEmpty}")
     private String publisher;
+
+    @NotEmpty (message = "{tweet.notEmpty}")
+    @Length(max = 140, message = "{tweet.length}")
     private String tweet;
 
     public String getPublisher() {

@@ -2,6 +2,7 @@ package com.scmspain.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scmspain.configuration.TestConfiguration;
+import com.scmspain.entities.Tweet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +30,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class TweetControllerTest {
     @Autowired
     private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @Before
@@ -42,8 +45,38 @@ public class TweetControllerTest {
     }
 
     @Test
-    public void shouldReturn400WhenInsertingAnInvalidTweet() throws Exception {
+    public void shouldReturn400WhenInsertingATweetWithEmptyPublisher() throws Exception {
+        mockMvc.perform(newTweet("", "Welcome!"))
+                .andExpect(status().is(400));
+    }
+
+    @Test
+    public void shouldReturn400WhenInsertingATweetWithNullPublisher() throws Exception {
+        mockMvc.perform(
+                post("/tweet")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content("{\"publisher\": , \"tweet\": \"Any message\"}"))
+                .andExpect(status().is(400));
+    }
+
+    @Test
+    public void shouldReturn400WhenInsertingATweetWithMoreThan140Characters() throws Exception {
         mockMvc.perform(newTweet("Schibsted Spain", "We are Schibsted Spain (look at our home page http://www.schibsted.es/), we own Vibbo, InfoJobs, fotocasa, coches.net and milanuncios. Welcome!"))
+                .andExpect(status().is(400));
+    }
+
+    @Test
+    public void shouldReturn400WhenInsertingATweetWithoutCharacters() throws Exception {
+        mockMvc.perform(newTweet("Schibsted Spain", ""))
+                .andExpect(status().is(400));
+    }
+
+    @Test
+    public void shouldReturn400WhenInsertingANullTweet() throws Exception {
+        mockMvc.perform(
+                post("/tweet")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content("{\"publisher\": \"Any publisher\", \"tweet\":}"))
                 .andExpect(status().is(400));
     }
 

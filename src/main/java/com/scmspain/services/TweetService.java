@@ -4,9 +4,11 @@ import com.scmspain.entities.Tweet;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,8 @@ import java.util.List;
 @Service
 @Transactional
 public class TweetService {
-    private EntityManager entityManager;
-    private MetricWriter metricWriter;
+    private final EntityManager entityManager;
+    private final MetricWriter metricWriter;
 
     public TweetService(EntityManager entityManager, MetricWriter metricWriter) {
         this.entityManager = entityManager;
@@ -29,16 +31,16 @@ public class TweetService {
       Result - recovered Tweet
     */
     public void publishTweet(String publisher, String text) {
-        if (publisher != null && publisher.length() > 0 && text != null && text.length() > 0 && text.length() < 140) {
-            Tweet tweet = new Tweet();
-            tweet.setTweet(text);
-            tweet.setPublisher(publisher);
+        checkPublisher(publisher);
+        checkTweet(text);
 
-            this.metricWriter.increment(new Delta<Number>("published-tweets", 1));
-            this.entityManager.persist(tweet);
-        } else {
-            throw new IllegalArgumentException("Tweet must not be greater than 140 characters");
-        }
+        this.metricWriter.increment(new Delta<Number>("published-tweets", 1));
+
+        final Tweet tweet = new Tweet();
+        tweet.setTweet(text);
+        tweet.setPublisher(publisher);
+
+        this.entityManager.persist(tweet);
     }
 
     /**
@@ -47,7 +49,10 @@ public class TweetService {
       Result - retrieved Tweet
     */
     public Tweet getTweet(Long id) {
-      return this.entityManager.find(Tweet.class, id);
+        checkId(id);
+
+        this.metricWriter.increment(new Delta<Number>("times-queried-one-tweet", 1));
+        return findTweet(id);
     }
 
     /**
@@ -56,13 +61,31 @@ public class TweetService {
       Result - retrieved Tweet
     */
     public List<Tweet> listAllTweets() {
-        List<Tweet> result = new ArrayList<Tweet>();
         this.metricWriter.increment(new Delta<Number>("times-queried-tweets", 1));
-        TypedQuery<Long> query = this.entityManager.createQuery("SELECT id FROM Tweet AS tweetId WHERE pre2015MigrationStatus<>99 ORDER BY id DESC", Long.class);
-        List<Long> ids = query.getResultList();
-        for (Long id : ids) {
-            result.add(getTweet(id));
+
+        TypedQuery<Tweet> query = entityManager.createQuery("SELECT t FROM Tweet t WHERE pre2015MigrationStatus<>99 ORDER BY id DESC", Tweet.class);
+        return query.getResultList();
+    }
+
+    private Tweet findTweet(Long id) {
+        return this.entityManager.find(Tweet.class, id);
+    }
+
+    private void checkPublisher(String publisher) {
+        if (!StringUtils.hasLength(publisher)) {
+            throw new IllegalArgumentException("Publisher must have length");
         }
-        return result;
+    }
+
+    private void checkTweet(String text) {
+        if (!StringUtils.hasLength(text) || text.length() > 140) {
+            throw new IllegalArgumentException("Tweet must not be greater than 140 characters");
+        }
+    }
+
+    private void checkId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Tweet's id must not be null");
+        }
     }
 }
