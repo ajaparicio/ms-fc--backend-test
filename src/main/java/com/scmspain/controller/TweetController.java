@@ -3,16 +3,13 @@ package com.scmspain.controller;
 import com.scmspain.controller.command.PublishTweetCommand;
 import com.scmspain.entities.Tweet;
 import com.scmspain.services.TweetService;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import com.scmspain.services.dao.TweetDAO;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
@@ -25,7 +22,18 @@ public class TweetController {
 
     @GetMapping("/tweet")
     public List<Tweet> listAllTweets() {
-        return this.tweetService.listAllTweets();
+        final List<Tweet> tweets = new ArrayList<>();
+        //TODO: Use Dozer for that
+        Tweet tweet;
+        for (TweetDAO dao : this.tweetService.listAllTweets()) {
+            tweet = new Tweet();
+            tweet.setId(dao.getId());
+            tweet.setPublisher(dao.getPublisher());
+            tweet.setTweet(dao.getTweet());
+
+            tweets.add(tweet);
+        }
+        return tweets;
     }
 
     @PostMapping("/tweet")

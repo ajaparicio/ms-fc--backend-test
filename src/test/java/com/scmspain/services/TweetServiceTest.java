@@ -1,6 +1,7 @@
 package com.scmspain.services;
 
 import com.scmspain.entities.Tweet;
+import com.scmspain.services.dao.TweetDAO;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.writer.Delta;
@@ -86,26 +87,26 @@ public class TweetServiceTest {
     @Test
     public void shouldReturnATweet() {
         Long anyId = 1L;
-        Tweet anyTweet = new Tweet();
-        when(entityManager.find(Tweet.class, anyId)).thenReturn(anyTweet);
+        TweetDAO anyTweet = new TweetDAO();
+        when(entityManager.find(TweetDAO.class, anyId)).thenReturn(anyTweet);
 
-        Tweet tweet = tweetService.getTweet(1L);
+        TweetDAO tweet = tweetService.getTweet(1L);
 
         assertThat(tweet).isEqualTo(anyTweet);
 
-        verify(entityManager).find(Tweet.class, anyId);
+        verify(entityManager).find(TweetDAO.class, anyId);
     }
 
     @Test
     public void shouldReturnNullWhenNotExistTheId() {
         Long anyId = 1L;
-        when(entityManager.find(Tweet.class, anyId)).thenReturn(null);
+        when(entityManager.find(TweetDAO.class, anyId)).thenReturn(null);
 
-        Tweet tweet = tweetService.getTweet(1L);
+        TweetDAO tweet = tweetService.getTweet(1L);
 
         assertThat(tweet).isNull();
 
-        verify(entityManager).find(Tweet.class, anyId);
+        verify(entityManager).find(TweetDAO.class, anyId);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -117,14 +118,15 @@ public class TweetServiceTest {
         }
     }
 
+    @Test
     public void shouldReturnAllTweet() {
-        Tweet anyTweet = new Tweet();
+        TweetDAO anyTweet = new TweetDAO();
 
-        TypedQuery<Tweet> anyQuery = mock(TypedQuery.class);
+        TypedQuery<TweetDAO> anyQuery = mock(TypedQuery.class);
         when(anyQuery.getResultList()).thenReturn(Arrays.asList(anyTweet));
-        when(entityManager.createQuery("SELECT t FROM Tweet t WHERE pre2015MigrationStatus<>99 ORDER BY id DESC", Tweet.class)).thenReturn(anyQuery);
+        when(entityManager.createQuery("SELECT t FROM Tweet t WHERE pre2015MigrationStatus<>99 ORDER BY created DESC", TweetDAO.class)).thenReturn(anyQuery);
 
-        List<Tweet> tweets = tweetService.listAllTweets();
+        List<TweetDAO> tweets = tweetService.listAllTweets();
 
         assertThat(tweets.size()).isEqualTo(1);
         assertThat(tweets.contains(anyTweet)).isTrue();

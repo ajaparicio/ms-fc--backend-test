@@ -2,7 +2,6 @@ package com.scmspain.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scmspain.configuration.TestConfiguration;
-import com.scmspain.entities.Tweet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
