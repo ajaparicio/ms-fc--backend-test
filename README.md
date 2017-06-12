@@ -60,9 +60,20 @@ To get all published tweets
 curl http://localhost:8080/tweet
 ```
 
+
+To get all discarded tweets
+```sh
+curl http://localhost:8080/discarded
+```
+
 To publish a new tweet
 ```sh
 curl -XPOST -d '{ "publisher": "Prospect", "tweet": "Breaking the law" }' -H 'Content-Type: application/json' http://localhost:8080/tweet
+```
+
+To discard a new tweet
+```sh
+curl -XPOST -d '{ "tweet": 1 }' -H 'Content-Type: application/json' http://localhost:8080/discarded
 ```
 
 ## Test

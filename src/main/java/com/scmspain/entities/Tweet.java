@@ -4,6 +4,7 @@ public class Tweet {
     private Long id;
     private String publisher;
     private String tweet;
+    private Long pre2015MigrationStatus;
 
     public Long getId() {
         return id;
@@ -29,12 +30,21 @@ public class Tweet {
         this.tweet = tweet;
     }
 
+    public Long getPre2015MigrationStatus() {
+        return pre2015MigrationStatus;
+    }
+
+    public void setPre2015MigrationStatus(Long pre2015MigrationStatus) {
+        this.pre2015MigrationStatus = pre2015MigrationStatus;
+    }
+
     @Override
     public String toString() {
         return "Tweet{" +
                 "id=" + id +
                 ", publisher='" + publisher + '\'' +
                 ", tweet='" + tweet + '\'' +
+                ", pre2015MigrationStatus=" + pre2015MigrationStatus +
                 '}';
     }
 }

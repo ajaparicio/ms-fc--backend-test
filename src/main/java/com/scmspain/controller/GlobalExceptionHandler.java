@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.StringJoiner;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * Not all InvalidArgumentException shall be 4XX error, only the input validation

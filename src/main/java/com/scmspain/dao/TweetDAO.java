@@ -1,12 +1,16 @@
-package com.scmspain.services.dao;
+package com.scmspain.dao;
 
 import com.scmspain.entities.Tweet;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Entity(name = "Tweet")
-public class TweetDAO {
+public class TweetDAO implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
@@ -24,6 +28,8 @@ public class TweetDAO {
     private Date discardedDate;
     @Column (columnDefinition = "boolean default false", nullable = false)
     private boolean discarded = false;
+    @OneToMany(fetch = FetchType.EAGER, cascade = ALL, mappedBy="tweet")
+    private List<LinkDAO> links;
 
     public TweetDAO() {
     }
@@ -84,6 +90,14 @@ public class TweetDAO {
         this.discarded = discarded;
     }
 
+    public List<LinkDAO> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<LinkDAO> links) {
+        this.links = links;
+    }
+
     @PrePersist
     protected void onCreate() {
         created = new Date();
@@ -91,7 +105,7 @@ public class TweetDAO {
 
     @Override
     public String toString() {
-        return "Tweet{" +
+        return "TweetDAO{" +
                 "id=" + id +
                 ", created=" + created +
                 ", publisher='" + publisher + '\'' +
@@ -99,6 +113,7 @@ public class TweetDAO {
                 ", pre2015MigrationStatus=" + pre2015MigrationStatus +
                 ", discardedDate=" + discardedDate +
                 ", discarded=" + discarded +
+                ", links=" + links +
                 '}';
     }
 }
